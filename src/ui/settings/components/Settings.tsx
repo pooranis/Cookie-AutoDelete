@@ -106,14 +106,12 @@ class Settings extends React.Component<SettingProps> {
         // https://stackoverflow.com/questions/35789498/new-typescript-1-8-4-build-error-build-property-result-does-not-exist-on-t
         const target: FileReader = file.target;
         const result: string = target.result as string;
-        const jsonImport: { [k: string]: Record<string, unknown> } = JSON.parse(
-          result,
-        );
+        const jsonImport: { [k: string]: Record<string, unknown> } =
+          JSON.parse(result);
         if (!jsonImport.settings) {
           cadLog(
             {
-              msg:
-                'importCoreSettings:  Imported JSON does not have "settings" array',
+              msg: 'importCoreSettings:  Imported JSON does not have "settings" array',
               x: jsonImport,
             },
             debug,
@@ -130,13 +128,12 @@ class Settings extends React.Component<SettingProps> {
           return;
         }
         // from { name, value } to name:{ name, value }
-        const newSettings: MapToSettingObject = ((jsonImport.settings as unknown) as Setting[]).reduce(
-          (a: { [k: string]: Setting }, c: Setting) => {
-            a[c.name] = c;
-            return a;
-          },
-          {},
-        );
+        const newSettings: MapToSettingObject = (
+          jsonImport.settings as unknown as Setting[]
+        ).reduce((a: { [k: string]: Setting }, c: Setting) => {
+          a[c.name] = c;
+          return a;
+        }, {});
         const settingKeys = Object.keys(newSettings);
         const unknownKeys = settingKeys.filter(
           (key) => !initialSettingKeys.includes(key),
@@ -209,13 +206,8 @@ class Settings extends React.Component<SettingProps> {
   }
 
   public render() {
-    const {
-      cache,
-      onResetButtonClick,
-      onUpdateSetting,
-      settings,
-      style,
-    } = this.props;
+    const { cache, onResetButtonClick, onUpdateSetting, settings, style } =
+      this.props;
     const { error, success } = this.state;
     return (
       <div style={style}>
@@ -373,16 +365,6 @@ class Settings extends React.Component<SettingProps> {
               updateSetting={(payload) => onUpdateSetting(payload)}
             />
             <SettingsTooltip hrefURL={'#clean-all-expired-cookies'} />
-          </div>
-        </fieldset>
-        <hr />
-        <fieldset>
-          <legend>{browser.i18n.getMessage('settingGroupExpression')}</legend>
-          <div className="alert alert-info">
-            {browser.i18n.getMessage('groupExpressionDefaultNotice', [
-              browser.i18n.getMessage('expressionListText'),
-            ])}{' '}
-            <SettingsTooltip hrefURL={'#default-expression-options'} />
           </div>
         </fieldset>
         <hr />

@@ -43,47 +43,47 @@ const sampleTab: browser.tabs.Tab = {
   windowId: 1,
 };
 
-const wildCardWhiteListGoogle: Expression = {
+const wildCardKeepListGoogle: Expression = {
   expression: '*.google.com',
   id: '1',
-  listType: ListType.GREY,
+  listType: ListType.RESTART,
   storeId: 'default',
 };
 
-const whiteListYoutube: Expression = {
+const keepListYoutube: Expression = {
   expression: 'youtube.com',
   cleanSiteData: [SiteDataType.CACHE],
   id: '2',
-  listType: ListType.WHITE,
+  listType: ListType.KEEP,
   storeId: 'default',
 };
 
-const wildCardGreyFacebook: Expression = {
+const wildCardRestartFacebook: Expression = {
   expression: '*.facebook.com',
   id: '3',
-  listType: ListType.GREY,
+  listType: ListType.RESTART,
   storeId: 'firefox-container-1',
 };
 
-const wildCardGreyGit: Expression = {
+const wildCardRestartGit: Expression = {
   expression: 'git*b.com',
   id: '4',
-  listType: ListType.GREY,
+  listType: ListType.RESTART,
   storeId: 'default',
 };
 
-const whiteListAllExceptTwitter: Expression = {
+const keepListAllExceptTwitter: Expression = {
   expression: '/^((?!twitter[.]com).)+$/',
   id: '5',
-  listType: ListType.WHITE,
+  listType: ListType.KEEP,
   storeId: 'default',
 };
 
-const greyMessenger: Expression = {
+const restartMessenger: Expression = {
   expression: 'messenger.com',
   cleanSiteData: [SiteDataType.CACHE],
   id: '6',
-  listType: ListType.GREY,
+  listType: ListType.RESTART,
   storeId: 'firefox-container-1',
 };
 
@@ -92,7 +92,7 @@ const exampleWithCookieName: Expression = {
   cookieNames: ['in-cookie-names'],
   expression: 'examplewithcookiename.com',
   id: '7',
-  listType: ListType.WHITE,
+  listType: ListType.KEEP,
   storeId: 'default',
 };
 
@@ -103,10 +103,10 @@ const exampleWithCookieNameCleanAllCookiesTrue: Expression = {
   id: '8',
 };
 
-const exampleWithCookieNameGrey: Expression = {
+const exampleWithCookieNameRestart: Expression = {
   ...exampleWithCookieName,
   id: '9',
-  listType: ListType.GREY,
+  listType: ListType.RESTART,
   storeId: 'firefox-container-1',
 };
 
@@ -114,16 +114,16 @@ const sampleState: State = {
   ...initialState,
   lists: {
     default: [
-      wildCardGreyGit,
-      wildCardWhiteListGoogle,
-      whiteListYoutube,
+      wildCardRestartGit,
+      wildCardKeepListGoogle,
+      keepListYoutube,
       exampleWithCookieName,
       exampleWithCookieNameCleanAllCookiesTrue,
     ],
     'firefox-container-1': [
-      wildCardGreyFacebook,
-      greyMessenger,
-      exampleWithCookieNameGrey,
+      wildCardRestartFacebook,
+      restartMessenger,
+      exampleWithCookieNameRestart,
     ],
   },
 };
@@ -185,7 +185,7 @@ const openTabCookie: CookiePropertiesCleanup = {
 const githubCookie: CookiePropertiesCleanup = {
   ...mockCookie,
   domain: 'github.com',
-  name: 'greylist',
+  name: 'restartlist',
 };
 
 const personalGoogleCookie: CookiePropertiesCleanup = {
@@ -265,7 +265,7 @@ describe('CleanupService', () => {
 
   describe('cleanCookiesOperation()', () => {
     const cleanupProperties: CleanupProperties = {
-      greyCleanup: false,
+      restartCleanup: false,
       ignoreOpenTabs: false,
     };
     beforeEach(() => {
@@ -342,11 +342,11 @@ describe('CleanupService', () => {
           .calledWith({ storeId: 'firefox-default' })
           .mockResolvedValue([
             mockCookie, // no list
-            googleCookie, // greylist, opentab
-            youtubeCookie, // whitelist
+            googleCookie, // restartlist, opentab
+            youtubeCookie, // keeplist
             yahooCookie, // no list
             openTabCookie, // opentab
-            githubCookie, // greylist
+            githubCookie, // restartlist
           ] as never);
       });
 
@@ -390,7 +390,7 @@ describe('CleanupService', () => {
       it('Browser Restart clean, exclude open tabs.', async () => {
         const ffResult = await cleanCookiesOperation(firefoxState, {
           ...cleanupProperties,
-          greyCleanup: true,
+          restartCleanup: true,
         });
         expect(global.browser.cookies.remove).toHaveBeenCalledTimes(3);
         expect(ffResult.cachedResults.recentlyCleaned).toBe(3);
@@ -403,7 +403,7 @@ describe('CleanupService', () => {
 
       it('Browser Restart clean, include open tabs.', async () => {
         const ffResult = await cleanCookiesOperation(firefoxState, {
-          greyCleanup: true,
+          restartCleanup: true,
           ignoreOpenTabs: true,
         });
         expect(global.browser.cookies.remove).toHaveBeenCalledTimes(5);
@@ -431,7 +431,7 @@ describe('CleanupService', () => {
         ]);
       });
 
-      it('Regular clean, exclude open tabs, with only cookies in open tabs/whitelist.', async () => {
+      it('Regular clean, exclude open tabs, with only cookies in open tabs/keeplist.', async () => {
         when(global.browser.cookies.getAll)
           .calledWith({ storeId: 'firefox-default' })
           .mockResolvedValue([googleCookie, youtubeCookie] as never);
@@ -717,7 +717,7 @@ describe('CleanupService', () => {
         ...youtubeCookie,
       },
       expression: {
-        ...whiteListYoutube,
+        ...keepListYoutube,
       },
       openTabStatus: OpenTabStatus.TabsWasNotIgnored,
       reason: ReasonClean.MatchedExpressionButNoCookieName,
@@ -737,7 +737,7 @@ describe('CleanupService', () => {
           {
             ...mockCleanReasonObj,
             expression: {
-              ...whiteListYoutube,
+              ...keepListYoutube,
             },
           },
         ],
@@ -769,7 +769,7 @@ describe('CleanupService', () => {
           {
             ...mockCleanReasonObj,
             expression: {
-              ...whiteListYoutube,
+              ...keepListYoutube,
             },
           },
         ],
@@ -963,7 +963,7 @@ describe('CleanupService', () => {
           ...youtubeCookie,
         },
         expression: {
-          ...whiteListYoutube,
+          ...keepListYoutube,
         },
         openTabStatus: OpenTabStatus.TabsWasNotIgnored,
         reason: ReasonKeep.MatchedExpression,
@@ -980,7 +980,7 @@ describe('CleanupService', () => {
           ...youtubeCookie,
         },
         expression: {
-          ...whiteListYoutube,
+          ...keepListYoutube,
           cleanSiteData: [SiteDataType.LOCALSTORAGE],
         },
         openTabStatus: OpenTabStatus.TabsWasNotIgnored,
@@ -998,7 +998,7 @@ describe('CleanupService', () => {
           ...youtubeCookie,
         },
         expression: {
-          ...whiteListYoutube,
+          ...keepListYoutube,
           cleanSiteData: [SiteDataType.LOCALSTORAGE],
         },
         openTabStatus: OpenTabStatus.TabsWasNotIgnored,
@@ -1046,7 +1046,7 @@ describe('CleanupService', () => {
         dateTime: '',
         recentlyCleaned: 0,
       },
-      greyCleanup: false,
+      restartCleanup: false,
       hostnamesDeleted: new Set(),
       ignoreOpenTabs: false,
       openTabDomains: { 'firefox-default': ['example.com', 'mozilla.org'] },
@@ -1132,7 +1132,7 @@ describe('CleanupService', () => {
       expect(result.cleanCookie).toBe(false);
     });
 
-    it('should return true for twitter.com when using regular expressions whiteListAllExceptTwitter', () => {
+    it('should return true for twitter.com when using regular expressions keepListAllExceptTwitter', () => {
       const cookieProperty = {
         ...mockCookie,
         hostname: 'twitter.com',
@@ -1142,7 +1142,7 @@ describe('CleanupService', () => {
         ...sampleState,
         lists: {
           ...sampleState.lists,
-          default: [...sampleState.lists.default, whiteListAllExceptTwitter],
+          default: [...sampleState.lists.default, keepListAllExceptTwitter],
         },
       };
 
@@ -1228,7 +1228,7 @@ describe('CleanupService', () => {
       expect(result.cleanCookie).toBe(true);
     });
 
-    it('should return true for Facebook in Personal onStartup with Facebook in the Greylist', () => {
+    it('should return true for Facebook in Personal onStartup with Facebook in the Restartlist', () => {
       const cookieProperty = {
         ...mockCookie,
         hostname: 'facebook.com',
@@ -1238,9 +1238,9 @@ describe('CleanupService', () => {
 
       const result = isSafeToClean(sampleState, cookieProperty, {
         ...cleanupProperties,
-        greyCleanup: true,
+        restartCleanup: true,
       });
-      expect(result.reason).toBe(ReasonClean.StartupCleanupAndGreyList);
+      expect(result.reason).toBe(ReasonClean.StartupCleanupAndRestartList);
       expect(result.cleanCookie).toBe(true);
     });
 
@@ -1253,7 +1253,7 @@ describe('CleanupService', () => {
 
       const result = isSafeToClean(sampleState, cookieProperty, {
         ...cleanupProperties,
-        greyCleanup: true,
+        restartCleanup: true,
       });
       expect(result.reason).toBe(ReasonClean.StartupNoMatchedExpression);
       expect(result.cleanCookie).toBe(true);
@@ -1315,7 +1315,7 @@ describe('CleanupService', () => {
 
       const result = isSafeToClean(sampleState, cookieProperty, {
         ...cleanupProperties,
-        greyCleanup: true,
+        restartCleanup: true,
       });
       expect(result.reason).toBe(ReasonKeep.MatchedExpression);
       expect(result.cleanCookie).toBe(false);
@@ -1332,9 +1332,9 @@ describe('CleanupService', () => {
 
       const result = isSafeToClean(sampleState, cookieProperty, {
         ...cleanupProperties,
-        greyCleanup: true,
+        restartCleanup: true,
       });
-      expect(result.reason).toBe(ReasonClean.StartupCleanupAndGreyList);
+      expect(result.reason).toBe(ReasonClean.StartupCleanupAndRestartList);
       expect(result.cleanCookie).toBe(true);
     });
 
@@ -1393,7 +1393,7 @@ describe('CleanupService', () => {
 
       const result = isSafeToClean(sampleState, cookieProperty, {
         ...cleanupProperties,
-        greyCleanup: true,
+        restartCleanup: true,
       });
       expect(result.reason).toBe(ReasonClean.CADSiteDataCookie);
       expect(result.cleanCookie).toBe(true);

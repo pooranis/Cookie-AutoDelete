@@ -168,8 +168,7 @@ describe('Library Functions', () => {
       expect(consoleOutput).toEqual([
         {
           type: 'error',
-          msg:
-            'CAD_0.12.34 - Invalid Console Output Type given [ invalid ].  Using [debug] instead.',
+          msg: 'CAD_0.12.34 - Invalid Console Output Type given [ invalid ].  Using [debug] instead.',
         },
         { type: 'debug', msg: 'CAD_0.12.34 - debug - invalidType\n' },
       ]);
@@ -189,13 +188,11 @@ describe('Library Functions', () => {
       expect(consoleOutput).toEqual([
         {
           type: 'warn',
-          msg:
-            'CAD_0.12.34 - Received unexpected typeof [ function ].  Attempting to display it...',
+          msg: 'CAD_0.12.34 - Received unexpected typeof [ function ].  Attempting to display it...',
         },
         {
           type: 'debug',
-          msg:
-            'CAD_0.12.34 - debug - objectFunction\nfunction toString() { [native code] }',
+          msg: 'CAD_0.12.34 - debug - objectFunction\nfunction toString() { [native code] }',
         },
       ]);
     });
@@ -653,12 +650,12 @@ describe('Library Functions', () => {
   describe('getContainerExpressionDefault()', () => {
     const mockExpression: Expression = {
       expression: '',
-      listType: ListType.WHITE,
+      listType: ListType.KEEP,
       storeId: '',
     };
     it('should return default expression if list does not contain storeId given', () => {
       expect(
-        getContainerExpressionDefault(initialState, 'default', ListType.WHITE),
+        getContainerExpressionDefault(initialState, 'default', ListType.KEEP),
       ).toEqual(mockExpression);
     });
     it('should return default expression if existing list does not contain default expression key', () => {
@@ -666,7 +663,7 @@ describe('Library Functions', () => {
         getContainerExpressionDefault(
           { ...initialState, lists: { default: [mockExpression] } },
           'default',
-          ListType.WHITE,
+          ListType.KEEP,
         ),
       ).toEqual(mockExpression);
     });
@@ -678,16 +675,16 @@ describe('Library Functions', () => {
             lists: {
               default: [
                 {
-                  expression: `_Default:${ListType.WHITE}`,
+                  expression: `_Default:${ListType.KEEP}`,
                   cleanSiteData: [SiteDataType.PLUGINDATA],
-                  listType: ListType.WHITE,
+                  listType: ListType.KEEP,
                   storeId: 'default',
                 },
               ],
             },
           },
           'default',
-          ListType.WHITE,
+          ListType.KEEP,
         ),
       ).toEqual(
         expect.objectContaining({ cleanSiteData: [SiteDataType.PLUGINDATA] }),
@@ -708,16 +705,16 @@ describe('Library Functions', () => {
             lists: {
               default: [
                 {
-                  expression: `_Default:${ListType.WHITE}`,
+                  expression: `_Default:${ListType.KEEP}`,
                   cleanSiteData: [SiteDataType.PLUGINDATA],
-                  listType: ListType.WHITE,
+                  listType: ListType.KEEP,
                   storeId: 'default',
                 },
               ],
             },
           },
           'firefox-container-1',
-          ListType.WHITE,
+          ListType.KEEP,
         ),
       ).toEqual(
         expect.objectContaining({ cleanSiteData: [SiteDataType.PLUGINDATA] }),
@@ -737,7 +734,7 @@ describe('Library Functions', () => {
             },
           },
           'firefox-container-1',
-          ListType.WHITE,
+          ListType.KEEP,
         ),
       ).toEqual(mockExpression);
     });
@@ -788,7 +785,7 @@ describe('Library Functions', () => {
   describe('getMatchedExpressions()', () => {
     const defaultExpression: Expression = {
       expression: '*.expression.com',
-      listType: ListType.WHITE,
+      listType: ListType.KEEP,
       storeId: 'default',
     };
     const lists: StoreIdToExpressionList = {
@@ -1310,14 +1307,9 @@ describe('Library Functions', () => {
     });
 
     it('should return cleanup domains from example.com', () => {
-      expect(
-        prepareCleanupDomains('example.com', browserName.Firefox),
-      ).toEqual([
-        'example.com',
-        '.example.com',
-        'www.example.com',
-        '.www.example.com',
-      ]);
+      expect(prepareCleanupDomains('example.com', browserName.Firefox)).toEqual(
+        ['example.com', '.example.com', 'www.example.com', '.www.example.com'],
+      );
     });
 
     it('should return cleanup domains from example.com for Chrome', () => {
@@ -1392,7 +1384,7 @@ describe('Library Functions', () => {
         default: [
           {
             expression: '*.expression.com',
-            listType: ListType.WHITE,
+            listType: ListType.KEEP,
             storeId: 'default',
           },
         ],
@@ -1699,9 +1691,10 @@ describe('Library Functions', () => {
     });
     it('should return invalid message on invalid RegExp', () => {
       validateExpressionDomain('/abc(def]/');
-      expect(
-        global.browser.i18n.getMessage,
-      ).toHaveBeenCalledWith('inputErrorRegExp', [expect.any(String)]);
+      expect(global.browser.i18n.getMessage).toHaveBeenCalledWith(
+        'inputErrorRegExp',
+        [expect.any(String)],
+      );
     });
     it('should return invalid message on start slash missing end slash', () => {
       validateExpressionDomain('/abc');

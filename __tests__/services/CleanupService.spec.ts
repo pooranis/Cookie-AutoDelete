@@ -1368,7 +1368,7 @@ describe('CleanupService', () => {
       expect(result.cleanCookie).toBe(false);
     });
 
-    it('should return true if cookie was created through CAD with matching WHITE expression and at least one browsingData type for cleanup', () => {
+    it('should return true if cookie was created through CAD with matching KEEP expression and at least one browsingData type for cleanup', () => {
       const cookieProperty = {
         ...mockCookie,
         name: CADCOOKIENAME,
@@ -1383,7 +1383,7 @@ describe('CleanupService', () => {
       expect(result.cleanCookie).toBe(true);
     });
 
-    it('should return true if cookie was created through CAD with matching GREY expression and at least one browsingData type for cleanup', () => {
+    it('should return true if cookie was created through CAD with matching RESTART expression and at least one browsingData type for cleanup', () => {
       const cookieProperty = {
         ...mockCookie,
         name: CADCOOKIENAME,

@@ -46,7 +46,7 @@ const settingOrder = [
   SettingID.CLEAN_DELAY,
   SettingID.CLEAN_DISCARDED,
   SettingID.CLEAN_DOMAIN_CHANGE,
-  SettingID.ENABLE_GREYLIST,
+  SettingID.ENABLE_RESTARTLIST,
   SettingID.CLEAN_OPEN_TABS_STARTUP,
   SettingID.CLEAN_EXPIRED,
   SettingID.CLEANUP_CACHE,
@@ -238,8 +238,7 @@ class About extends React.Component<AboutProps> {
               cadLog(
                 {
                   type: 'error',
-                  msg:
-                    'Could not find either textarea or span for debugSettings',
+                  msg: 'Could not find either textarea or span for debugSettings',
                 },
                 true,
               );
@@ -249,8 +248,7 @@ class About extends React.Component<AboutProps> {
               cadLog(
                 {
                   type: 'error',
-                  msg:
-                    'Could not get textContent from textarea for debugSettings',
+                  msg: 'Could not get textContent from textarea for debugSettings',
                 },
                 true,
               );

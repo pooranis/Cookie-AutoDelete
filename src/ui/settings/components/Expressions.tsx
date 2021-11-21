@@ -61,7 +61,8 @@ interface DispatchProps {
 type ExpressionProps = OwnProps & StateProps & DispatchProps;
 
 class InitialState {
-  public contextualIdentitiesObjects: browser.contextualIdentities.ContextualIdentity[] = [];
+  public contextualIdentitiesObjects: browser.contextualIdentities.ContextualIdentity[] =
+    [];
   public error = '';
   public expressionInput = '';
   public storeId = 'default';
@@ -321,7 +322,7 @@ class Expressions extends React.Component<ExpressionProps> {
       })(bName),
     );
     containers.forEach((id) => {
-      [ListType.GREY, ListType.WHITE].forEach((lt) => {
+      [ListType.RESTART, ListType.KEEP].forEach((lt) => {
         onNewExpression({
           expression: `_Default:${lt}`,
           listType: lt,
@@ -346,9 +347,8 @@ class Expressions extends React.Component<ExpressionProps> {
 
   public async componentDidMount() {
     if (this.props.contextualIdentities) {
-      const contextualIdentitiesObjects = await browser.contextualIdentities.query(
-        {},
-      );
+      const contextualIdentitiesObjects =
+        await browser.contextualIdentities.query({});
       this.setState({
         contextualIdentitiesObjects,
       });
@@ -395,7 +395,7 @@ class Expressions extends React.Component<ExpressionProps> {
               if (e.key.toLowerCase() === 'enter') {
                 this.addExpressionByInput({
                   expression: this.state.expressionInput,
-                  listType: e.shiftKey ? ListType.GREY : ListType.WHITE,
+                  listType: e.shiftKey ? ListType.RESTART : ListType.KEEP,
                   storeId,
                 });
               }
@@ -523,14 +523,14 @@ class Expressions extends React.Component<ExpressionProps> {
               onClick={() => {
                 this.addExpressionByInput({
                   expression: this.state.expressionInput,
-                  listType: ListType.GREY,
+                  listType: ListType.RESTART,
                   storeId,
                 });
               }}
               styleReact={styles.buttonStyle}
               iconName="plus"
-              title={browser.i18n.getMessage('toGreyListText')}
-              text={browser.i18n.getMessage('greyListWordText')}
+              title={browser.i18n.getMessage('toRestartListText')}
+              text={browser.i18n.getMessage('restartListWordText')}
             />
 
             <IconButton
@@ -538,14 +538,14 @@ class Expressions extends React.Component<ExpressionProps> {
               onClick={() => {
                 this.addExpressionByInput({
                   expression: this.state.expressionInput,
-                  listType: ListType.WHITE,
+                  listType: ListType.KEEP,
                   storeId,
                 });
               }}
               styleReact={styles.buttonStyle}
               iconName="plus"
-              title={browser.i18n.getMessage('toWhiteListText')}
-              text={browser.i18n.getMessage('whiteListWordText')}
+              title={browser.i18n.getMessage('toKeepListText')}
+              text={browser.i18n.getMessage('keepListWordText')}
             />
           </div>
         </div>

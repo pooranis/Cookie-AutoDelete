@@ -22,6 +22,7 @@ export const SITEDATATYPES = [
   SiteDataType.LOCALSTORAGE,
   SiteDataType.PLUGINDATA,
   SiteDataType.SERVICEWORKERS,
+  SiteDataType.CACHESTORAGE,
 ];
 
 /* --- FUNCTIONS --- */

@@ -71,6 +71,7 @@ declare const enum SiteDataType {
   LOCALSTORAGE = 'LocalStorage',
   PLUGINDATA = 'PluginData',
   SERVICEWORKERS = 'ServiceWorkers',
+  CACHESTORAGE = 'CacheStorage',
 }
 
 type Setting = Readonly<{

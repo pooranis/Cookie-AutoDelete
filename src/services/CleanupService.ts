@@ -565,6 +565,13 @@ export const otherBrowsingDataCleanup = async (
       state.cache.browserDetect,
       debug,
     );
+   const cachestoragethrowaway = await cleanSiteData(
+      state,
+      SiteDataType.CACHESTORAGE,
+      isSafeToCleanObjects,
+      state.cache.browserDetect,
+      debug,
+    );
   }
   if (
     getSetting(state, SettingID.CLEANUP_INDEXEDDB) &&
@@ -675,6 +682,7 @@ export const filterSiteData = (
   debug = false,
 ): boolean => {
   const notProtectedByOpenTab = obj.reason !== ReasonKeep.OpenTabs;
+  const greyClean = obj.reason === ReasonClean.StartupCleanupAndGreyList;
   const notInAnyLists =
     obj.reason === ReasonClean.NoMatchedExpression ||
     obj.reason === ReasonClean.StartupNoMatchedExpression;
@@ -698,6 +706,7 @@ export const filterSiteData = (
       msg: 'CleanupService.filterSiteData: debug data.',
       x: {
         notProtectedByOpenTab,
+	greyClean,
         notInAnyLists,
         siteData,
         canCleanSiteData,
@@ -709,7 +718,7 @@ export const filterSiteData = (
     debug,
   );
   const r =
-    (notInAnyLists || (notProtectedByOpenTab && canCleanSiteData)) &&
+    (notInAnyLists || (notProtectedByOpenTab && canCleanSiteData) || (greyClean && !canCleanSiteData)) &&
     nonBlankCookieHostName;
   cadLog(
     {
